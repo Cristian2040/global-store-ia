@@ -19,30 +19,51 @@ class ProductService {
     }
 
     async getAll(filters = {}, pagination = {}) {
-        const { category, company, search } = filters;
+        const { category, company, search, min, max, tags, sort } = filters;
         const { page = 1, limit = 10 } = pagination;
 
         const query = {};
 
         if (category) query.category = category;
-        if (company) query.company = company;
+        if (company) query.company = { $regex: company, $options: 'i' };
+
+        if (min || max) {
+            query.price = {};
+            if (min) query.price.$gte = Number(min);
+            if (max) query.price.$lte = Number(max);
+        }
+
+        if (tags) {
+            const tagList = tags.split(',').map(t => t.trim());
+            query.tags = { $in: tagList };
+        }
+
         if (search) {
             query.$or = [
                 { name: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
+                { tags: { $regex: search, $options: 'i' } },
                 { barcode: search }
             ];
         }
+
+        const sortOptions = {
+            price_asc: { price: 1 },
+            price_desc: { price: -1 },
+            newest: { createdAt: -1 }
+        };
+        const sortOption = sortOptions[sort] || { createdAt: -1 };
 
         const skip = (page - 1) * limit;
         const [products, total] = await Promise.all([
             Product.find(query)
                 .limit(limit)
                 .skip(skip)
-                .sort({ createdAt: -1 }),
+                .sort(sortOption),
             Product.countDocuments(query)
         ]);
 
-        return { products, pagination: { page: parseInt(page), limit: parseInt(limit), total } };
+        return { products, pagination: { page: parseInt(page), limit: parseInt(limit), total, totalPages: Math.ceil(total / limit) } };
     }
 
     async getById(productId) {

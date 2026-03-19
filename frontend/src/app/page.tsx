@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { ShoppingBag, Store, Truck, Users, ArrowRight, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { BrandsCarousel } from '@/components/common/BrandsCarousel';
+import { FaqAccordion } from '@/components/common/FaqAccordion';
 
 export default function HomePage() {
   const features = [
@@ -53,10 +55,14 @@ export default function HomePage() {
             </div>
             <div className="flex items-center space-x-4">
               <Link href="/login">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-gray-800">Iniciar Sesión</Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-gray-800 transition-all">Iniciar Sesión</Button>
+                </motion.div>
               </Link>
               <Link href="/register">
-                <Button variant="primary">Registrarse</Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button variant="primary" className="shadow-lg shadow-blue-500/30">Registrarse</Button>
+                </motion.div>
               </Link>
             </div>
           </div>
@@ -83,15 +89,19 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/register">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    Comenzar Gratis
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.05, x: 5 }} whileTap={{ scale: 0.95 }}>
+                    <Button size="lg" className="w-full sm:w-auto shadow-xl shadow-purple-500/20">
+                      Comenzar Gratis
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </motion.div>
                 </Link>
                 <Link href="#features">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
-                    Conocer Más
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.05, x: 5 }} whileTap={{ scale: 0.95 }}>
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white transition-all">
+                      Conocer Más
+                    </Button>
+                  </motion.div>
                 </Link>
               </div>
             </motion.div>
@@ -135,11 +145,12 @@ export default function HomePage() {
             {features.map((feature, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all border border-gray-800"
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                whileHover={{ scale: 1.05, y: -10, boxShadow: '0 20px 25px -5px rgb(59 130 246 / 0.1)' }}
+                transition={{ duration: 0.5, delay: index * 0.1, ease: 'easeOut' }}
+                viewport={{ once: true, margin: '-50px' }}
+                className="bg-gradient-to-br from-gray-800 to-gray-900 p-6 rounded-xl border border-gray-800 cursor-pointer"
               >
                 <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white mb-4">
                   {feature.icon}
@@ -167,10 +178,18 @@ export default function HomePage() {
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-start space-x-2">
+                  <motion.div 
+                    key={index} 
+                    className="flex items-start space-x-2"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.4 }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.05, x: 10, color: '#38bdf8' }}
+                  >
                     <Check className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-1" />
-                    <span className="text-gray-200">{benefit}</span>
-                  </div>
+                    <span className="text-gray-200 transition-colors">{benefit}</span>
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -186,6 +205,30 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ y Carousel Section agregadas */}
+      <section className="py-20 bg-gray-950 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 mix-blend-overlay"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <BrandsCarousel />
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
+            <FaqAccordion />
+          </motion.div>
         </div>
       </section>
 

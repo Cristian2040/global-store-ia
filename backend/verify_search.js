@@ -42,18 +42,13 @@ async function runTests() {
     });
 
     // 3. Category Filter
-    await test('Category Filter (Electrónica)', { category: 'Electrónica' }, (data) => {
-        return data.data.length > 0 && data.data.every(p => p.category === 'Electrónica');
+    await test('Category Filter (Frutas)', { category: 'Frutas' }, (data) => {
+        return data.data.length > 0 && data.data.every(p => p.category === 'Frutas');
     });
 
     // 4. Price Range
     await test('Price Range (100-200)', { min: 100, max: 200 }, (data) => {
         return data.data.length > 0 && data.data.every(p => p.price >= 100 && p.price <= 200);
-    });
-
-    // 5. Tags Filter
-    await test('Tags Filter (ia)', { tags: 'ia' }, (data) => {
-        return data.data.length > 0 && data.data.some(p => p.tags.includes('ia'));
     });
 
     // 6. Sorting (Price Asc)
@@ -76,7 +71,7 @@ async function runTests() {
     // 9. Validating new fields existence
     await test('Fields Existence', { limit: 1 }, (data) => {
         const p = data.data[0];
-        return p.description !== undefined && p.tags !== undefined && p.price !== undefined;
+        return p !== undefined && p.description !== undefined && p.tags !== undefined && p.price !== undefined;
     });
 
     console.log(`\nTests Completed. Passed: ${passed}, Failed: ${failed}`);

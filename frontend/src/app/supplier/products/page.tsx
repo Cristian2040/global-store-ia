@@ -103,8 +103,26 @@ export default function SupplierProductsPage() {
                 await api.put(`/supplier-products/${editingProduct._id}`, payload);
                 toast.success('Producto actualizado exitosamente');
             } else {
-                await api.post('/supplier-products', payload);
-                toast.success('Producto vinculado exitosamente');
+                try {
+                    await api.post('/supplier-products', payload);
+                    toast.success('Producto vinculado exitosamente');
+                } catch (postError: any) {
+                    if (postError.response?.status === 409) {
+                        // Product already linked — find the existing one and update it
+                        const existing = supplierProducts.find(
+                            sp => sp.productId._id === formData.productId
+                        );
+                        if (existing) {
+                            await api.put(`/supplier-products/${existing._id}`, payload);
+                            toast.success('Producto ya vinculado — precio y stock actualizados');
+                        } else {
+                            toast.error('Este producto ya está vinculado. Búscalo en la tabla y usa el botón ✏️ para editarlo.');
+                            return;
+                        }
+                    } else {
+                        throw postError;
+                    }
+                }
             }
 
             setIsModalOpen(false);
