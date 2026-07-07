@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { ShoppingBag, Store, Truck, Building2, Check, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ShoppingBag, Store, Truck, Building2, Check, ArrowLeft, ArrowRight, Shield, FileText, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -25,6 +25,8 @@ export default function RegisterPage() {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+    const [acceptDataProtection, setAcceptDataProtection] = useState(false);
     const [companies, setCompanies] = useState<{ _id: string, companyName: string }[]>([]);
     const { register } = useAuth();
     const router = useRouter();
@@ -131,6 +133,10 @@ export default function RegisterPage() {
     };
 
     const handleSubmit = async () => {
+        if (!acceptPrivacy || !acceptDataProtection) {
+            toast.error('Debes aceptar la Política de Privacidad y el Aviso de Protección de Datos para continuar');
+            return;
+        }
         setLoading(true);
         setError('');
 
@@ -460,14 +466,15 @@ export default function RegisterPage() {
                         </div>
                     )}
 
-                    {/* Step 4: Confirmation */}
+                    {/* Step 4: Confirmation + Privacy Consent */}
                     {step === 4 && (
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-2xl font-bold text-white mb-2">Confirma tu información</h2>
-                                <p className="text-gray-400">Revisa que todo esté correcto</p>
+                                <p className="text-gray-400">Revisa que todo esté correcto y acepta nuestros términos</p>
                             </div>
 
+                            {/* Data Summary */}
                             <div className="bg-gray-900/50 rounded-lg p-6 space-y-4 border border-gray-700">
                                 <div>
                                     <p className="text-sm text-gray-500">Rol</p>
@@ -518,6 +525,123 @@ export default function RegisterPage() {
                                     </>
                                 )}
                             </div>
+
+                            {/* Privacy & Data Protection Consent */}
+                            <div className="rounded-xl border border-cyan-500/30 bg-gradient-to-br from-cyan-950/40 to-blue-950/40 p-5 space-y-4">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Shield className="w-5 h-5 text-cyan-400" />
+                                    <h3 className="text-base font-bold text-white">Protección de Datos Personales</h3>
+                                </div>
+                                <p className="text-xs text-gray-400 leading-relaxed">
+                                    Conforme a la <strong className="text-gray-300">Ley Federal de Protección de Datos Personales en Posesión de Particulares (LFPDPPP)</strong>, debes leer y aceptar los siguientes documentos antes de crear tu cuenta.
+                                </p>
+
+                                {/* Document 1: Aviso de Protección de Datos */}
+                                <div className={`rounded-lg border p-4 transition-all ${
+                                    acceptDataProtection
+                                        ? 'border-cyan-500/50 bg-cyan-900/20'
+                                        : 'border-gray-600/50 bg-gray-800/30'
+                                }`}>
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <FileText className="w-4 h-4 text-cyan-400" />
+                                                <span className="text-sm font-semibold text-white">Aviso de Protección de Datos Personales</span>
+                                            </div>
+                                            <p className="text-xs text-gray-400 mb-3">
+                                                Documento que detalla cómo GlobalStore recopila, usa y protege tus datos personales conforme a la LFPDPPP, incluyendo el checklist de cumplimiento y tus derechos ARCO.
+                                            </p>
+                                            <a
+                                                href="/aviso-privacidad"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors border border-cyan-500/40 hover:border-cyan-400/60 rounded-md px-3 py-1.5 bg-cyan-900/20 hover:bg-cyan-900/40"
+                                            >
+                                                <ExternalLink className="w-3 h-3" />
+                                                Leer Aviso de Protección de Datos
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <label className="flex items-start gap-3 mt-3 cursor-pointer group">
+                                        <div className="relative mt-0.5">
+                                            <input
+                                                type="checkbox"
+                                                id="accept-data-protection"
+                                                checked={acceptDataProtection}
+                                                onChange={(e) => setAcceptDataProtection(e.target.checked)}
+                                                className="sr-only"
+                                            />
+                                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                                acceptDataProtection
+                                                    ? 'bg-cyan-500 border-cyan-500'
+                                                    : 'bg-gray-800 border-gray-600 group-hover:border-cyan-500/60'
+                                            }`}>
+                                                {acceptDataProtection && <Check className="w-3 h-3 text-white" />}
+                                            </div>
+                                        </div>
+                                        <span className="text-xs text-gray-300 leading-relaxed">
+                                            He leído y acepto el <strong className="text-white">Aviso de Protección de Datos Personales</strong> de GlobalStore, conforme a la LFPDPPP. Consiento el tratamiento de mis datos para las finalidades primarias descritas.
+                                        </span>
+                                    </label>
+                                </div>
+
+                                {/* Document 2: Política de Privacidad */}
+                                <div className={`rounded-lg border p-4 transition-all ${
+                                    acceptPrivacy
+                                        ? 'border-purple-500/50 bg-purple-900/20'
+                                        : 'border-gray-600/50 bg-gray-800/30'
+                                }`}>
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Shield className="w-4 h-4 text-purple-400" />
+                                                <span className="text-sm font-semibold text-white">Política de Privacidad</span>
+                                            </div>
+                                            <p className="text-xs text-gray-400 mb-3">
+                                                Documento completo sobre el tratamiento de datos: finalidades, transferencias a terceros, medidas de seguridad, período de retención y procedimiento de brechas de seguridad.
+                                            </p>
+                                            <a
+                                                href="/privacidad"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 text-xs font-medium text-purple-400 hover:text-purple-300 transition-colors border border-purple-500/40 hover:border-purple-400/60 rounded-md px-3 py-1.5 bg-purple-900/20 hover:bg-purple-900/40"
+                                            >
+                                                <ExternalLink className="w-3 h-3" />
+                                                Leer Política de Privacidad
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <label className="flex items-start gap-3 mt-3 cursor-pointer group">
+                                        <div className="relative mt-0.5">
+                                            <input
+                                                type="checkbox"
+                                                id="accept-privacy"
+                                                checked={acceptPrivacy}
+                                                onChange={(e) => setAcceptPrivacy(e.target.checked)}
+                                                className="sr-only"
+                                            />
+                                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                                acceptPrivacy
+                                                    ? 'bg-purple-500 border-purple-500'
+                                                    : 'bg-gray-800 border-gray-600 group-hover:border-purple-500/60'
+                                            }`}>
+                                                {acceptPrivacy && <Check className="w-3 h-3 text-white" />}
+                                            </div>
+                                        </div>
+                                        <span className="text-xs text-gray-300 leading-relaxed">
+                                            He leído y acepto la <strong className="text-white">Política de Privacidad</strong> de GlobalStore. Entiendo que puedo ejercer mis derechos ARCO en cualquier momento escribiendo a privacidad@globalstore.mx.
+                                        </span>
+                                    </label>
+                                </div>
+
+                                {/* Warning if not accepted */}
+                                {(!acceptPrivacy || !acceptDataProtection) && (
+                                    <p className="text-xs text-amber-400 flex items-center gap-1.5">
+                                        <span>⚠️</span>
+                                        Debes aceptar ambos documentos para crear tu cuenta.
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     )}
 
@@ -543,7 +667,11 @@ export default function RegisterPage() {
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         ) : (
-                            <Button onClick={handleSubmit} isLoading={loading}>
+                            <Button
+                                onClick={handleSubmit}
+                                isLoading={loading}
+                                disabled={!acceptPrivacy || !acceptDataProtection}
+                            >
                                 Crear Cuenta
                             </Button>
                         )}
